@@ -2,7 +2,9 @@ const { createClient } = require('@vercel/edge-config');
 
 module.exports = async (req, res) => {
   if (req.method === 'POST') {
-    const { assistant_id } = req.body;
+    console.log('Request body:', req.body); // Log request body
+
+    const { assistant_id } = req.body || {}; // Provide a fallback to prevent errors
 
     if (!assistant_id) {
       return res.status(400).json({ error: 'assistant_id is required' });
