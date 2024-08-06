@@ -1,10 +1,17 @@
 const { createClient } = require('@vercel/edge-config');
+const bodyParser = require('body-parser');
 
 module.exports = async (req, res) => {
-  if (req.method === 'POST') {
-    console.log('Request body:', req.body); // Log request body
+  // Ensure that bodyParser is used to parse the request body
+  await new Promise((resolve, reject) => {
+    bodyParser.json()(req, res, (err) => {
+      if (err) return reject(err);
+      resolve();
+    });
+  });
 
-    const { assistant_id } = req.body || {}; // Provide a fallback to prevent errors
+  if (req.method === 'POST') {
+    const { assistant_id } = req.body;
 
     if (!assistant_id) {
       return res.status(400).json({ error: 'assistant_id is required' });
