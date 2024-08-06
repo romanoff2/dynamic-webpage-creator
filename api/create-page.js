@@ -1,4 +1,4 @@
-const crypto = require('crypto');
+const { createClient } = require('@vercel/edge-config');
 
 module.exports = async (req, res) => {
   if (req.method === 'POST') {
@@ -43,10 +43,12 @@ module.exports = async (req, res) => {
     `;
 
     // Generate a unique identifier for the page
-    const pageId = crypto.randomBytes(16).toString('hex');
+    const pageId = Date.now().toString(36) + Math.random().toString(36).substr(2);
 
-    // In a real-world scenario, you would save this content to a database or file storage
-    // For this example, we'll just pretend we've saved it and return a mock URL
+    // Store the HTML content in Edge Config
+    const client = createClient(process.env.EDGE_CONFIG);
+    await client.set(`page:${pageId}`, htmlContent);
+
     const pageUrl = `https://${process.env.VERCEL_URL}/pages/${pageId}`;
 
     return res.status(200).json({ url: pageUrl });
